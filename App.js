@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, AsyncStorage } from 'react-native';
 import { Focus } from './src/features/focus/Focus';
 import { spacing } from './src/utils/sizes';
 import { colors } from './src/utils/colors';
 import { Timer } from './src/features/timer/Timer';
+import { FocusHistory } from './src/features/focus/FocusHistory';
 
 const STATUS = {
   COMPLETED: 1,
@@ -17,12 +18,48 @@ export default function App() {
     setFocusHistory([...focusHistory, { subject, status }]);
   };
 
-  console.log(focusHistory);
+  const onClearHistory = () => {
+    setFocusHistory([]);
+  };
+
+  const saveFocusHistory = async () => {
+    try {
+      await AsyncStorage.setItem('focusHistory', JSON.stringify(focusHistory));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    saveFocusHistory();
+  }, [focusHistory]);
+
+  const loadFocusHistory = async () => {
+    try {
+      const history = await AsyncStorage.getItem('focusHistory');
+      if (history && history.length) {
+        setFocusHistory(history);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    loadFocusHistory();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
         {!focusSubject ? (
-          <Focus addSubject={setFocusSubject} />
+          <>
+            <Focus addSubject={setFocusSubject} />
+            <FocusHistory
+              focusHistory={focusHistory}
+              onClear={onClearHistory}
+            />
+          </>
         ) : (
           <Timer
             focusSubject={focusSubject}

@@ -31,7 +31,9 @@ export const Focus = ({ addSubject }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    marginBottom: 50,
+  },
   title: {
     fontSize: fontSizes.lg,
     fontWeight: 'bold',
