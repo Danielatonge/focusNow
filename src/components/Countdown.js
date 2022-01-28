@@ -9,27 +9,35 @@ const formatTime = time => (time < 10 ? `0${time}` : time);
 
 setInterval(() => {});
 
-export const Countdown = ({ minutes = 20, isPaused = true }) => {
+export const Countdown = ({ minutes, isPaused, onProgress, timerEnded }) => {
   const interval = React.useRef(null);
-  const [millis, setMillis] = useState(minutesToMilliseconds(minutes));
+  const [millis, setMillis] = useState(0);
+
+  const minutesLeft = Math.floor(millis / 1000 / 60) % 60;
+  const secondsLeft = Math.floor(millis / 1000) % 60;
 
   const countDown = () => {
     setMillis(time => {
       if (time <= 0) {
+        timerEnded(false);
         return time;
       }
       const timeLeft = time - 1000;
+      const timeFraction = timeLeft / minutesToMilliseconds(minutes);
+      onProgress(Math.abs(timeFraction - 1));
       return timeLeft;
     });
   };
   useEffect(() => {
-    if (isPaused) return;
-    interval.current = setInterval(countDown, 1000);
+    setMillis(minutesToMilliseconds(minutes));
 
+    if (isPaused) {
+      if (interval.current) clearInterval(interval.current);
+      return;
+    }
+    interval.current = setInterval(countDown, 1000);
     return () => clearInterval(interval.current);
-  }, []);
-  const minutesLeft = Math.floor(millis / 1000 / 60) % 60;
-  const secondsLeft = Math.floor(millis / 1000) % 60;
+  }, [minutes, isPaused]);
   return (
     <View>
       <Text style={styles.timer}>
