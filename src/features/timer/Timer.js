@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Vibration, Platform } from 'react-native';
 import { colors } from '../../utils/colors';
 import { fontSizes, spacing } from '../../utils/sizes';
 import { Countdown } from '../../components/Countdown';
 import { RoundedButton } from '../../components/RoundedButton';
 import { ProgressBar } from 'react-native-paper';
 
-export const Timer = ({ focusSubject }) => {
+import { useKeepAwake } from 'expo-keep-awake';
+
+export const Timer = ({ focusSubject, onTimerEnd }) => {
+  useKeepAwake();
+
   const [isStarted, setIsStarted] = useState(false);
   const [minutes, setMinutes] = useState(20);
   const [progress, setProgress] = useState(0);
@@ -27,6 +31,31 @@ export const Timer = ({ focusSubject }) => {
     );
   });
 
+  const ONE_SECOND_IN_MS = 1000;
+
+  const PATTERN = [
+    1 * ONE_SECOND_IN_MS,
+    2 * ONE_SECOND_IN_MS,
+    3 * ONE_SECOND_IN_MS,
+  ];
+
+  const vibrate = () => {
+    if (Platform.OS === 'ios') {
+      Vibration.vibrate(PATTERN);
+    }
+  };
+
+  const onEnd = isStarted => {
+    vibrate();
+    setIsStarted(isStarted);
+    onTimerEnd();
+  };
+
+  const clearSubject = () => {
+    setIsStarted(isStarted);
+    onTimerEnd();
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.progressBar}>
@@ -37,7 +66,7 @@ export const Timer = ({ focusSubject }) => {
           minutes={minutes}
           isPaused={!isStarted}
           onProgress={setProgress}
-          timerEnded={setIsStarted}
+          timerEnded={onEnd}
         />
       </View>
       <View style={styles.focusTextContainer}>
@@ -47,9 +76,19 @@ export const Timer = ({ focusSubject }) => {
       <View style={styles.timeButtonContainer}>{selectTimeButtons}</View>
       <View style={styles.startBtn}>
         <RoundedButton
-          title={isStarted ? 'P' : 'Go'}
+          title={isStarted ? 'Pause' : 'Start'}
           size={100}
           onPress={() => setIsStarted(!isStarted)}
+        />
+      </View>
+      <View style={styles.clearContainer}>
+        <RoundedButton
+          onPress={() => {
+            clearSubject();
+          }}
+          style={styles.button}
+          title="-"
+          size={50}
         />
       </View>
     </View>
