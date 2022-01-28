@@ -8,7 +8,7 @@ import { ProgressBar } from 'react-native-paper';
 
 import { useKeepAwake } from 'expo-keep-awake';
 
-export const Timer = ({ focusSubject, onTimerEnd }) => {
+export const Timer = ({ focusSubject, onTimerEnd, onCancelled }) => {
   useKeepAwake();
 
   const [isStarted, setIsStarted] = useState(false);
@@ -53,7 +53,7 @@ export const Timer = ({ focusSubject, onTimerEnd }) => {
 
   const clearSubject = () => {
     setIsStarted(isStarted);
-    onTimerEnd();
+    onCancelled();
   };
 
   return (
