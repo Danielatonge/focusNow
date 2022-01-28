@@ -24,11 +24,19 @@ export const Countdown = ({ minutes, isPaused, onProgress, timerEnded }) => {
         return time;
       }
       const timeLeft = time - 1000;
-      const timeFraction = timeLeft / minutesToMilliseconds(minutes);
-      onProgress(Math.abs(timeFraction - 1));
       return timeLeft;
     });
   };
+
+  useEffect(() => {
+    const timeFraction = millis / minutesToMilliseconds(minutes);
+    onProgress(Math.abs(timeFraction - 1));
+
+    if (millis <= 0) {
+      timerEnded(false);
+    }
+  }, [millis]);
+
   useEffect(() => {
     setMillis(minutesToMilliseconds(minutes));
 

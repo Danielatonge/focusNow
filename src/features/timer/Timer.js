@@ -7,6 +7,7 @@ import { RoundedButton } from '../../components/RoundedButton';
 import { ProgressBar } from 'react-native-paper';
 
 import { useKeepAwake } from 'expo-keep-awake';
+import { SafeAreaView } from 'react-native';
 
 export const Timer = ({ focusSubject, onTimerEnd, onCancelled }) => {
   useKeepAwake();
@@ -57,41 +58,43 @@ export const Timer = ({ focusSubject, onTimerEnd, onCancelled }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.progressBar}>
-        <ProgressBar progress={progress} color="#fff" />
+    <SafeAreaView>
+      <View style={styles.container}>
+        <View style={styles.progressBar}>
+          <ProgressBar progress={progress} color="#fff" />
+        </View>
+        <View style={styles.countdown}>
+          <Countdown
+            minutes={minutes}
+            isPaused={!isStarted}
+            onProgress={setProgress}
+            timerEnded={onEnd}
+          />
+        </View>
+        <View style={styles.focusTextContainer}>
+          <Text style={styles.title}> Focusing on: </Text>
+          <Text style={styles.task}> {focusSubject}</Text>
+        </View>
+        <View style={styles.timeButtonContainer}>{selectTimeButtons}</View>
+        <View style={styles.startBtn}>
+          <RoundedButton
+            title={isStarted ? 'Pause' : 'Start'}
+            size={100}
+            onPress={() => setIsStarted(!isStarted)}
+          />
+        </View>
+        <View style={styles.clearContainer}>
+          <RoundedButton
+            onPress={() => {
+              clearSubject();
+            }}
+            style={styles.button}
+            title="-"
+            size={50}
+          />
+        </View>
       </View>
-      <View style={styles.countdown}>
-        <Countdown
-          minutes={minutes}
-          isPaused={!isStarted}
-          onProgress={setProgress}
-          timerEnded={onEnd}
-        />
-      </View>
-      <View style={styles.focusTextContainer}>
-        <Text style={styles.title}> Focusing on: </Text>
-        <Text style={styles.task}> {focusSubject}</Text>
-      </View>
-      <View style={styles.timeButtonContainer}>{selectTimeButtons}</View>
-      <View style={styles.startBtn}>
-        <RoundedButton
-          title={isStarted ? 'Pause' : 'Start'}
-          size={100}
-          onPress={() => setIsStarted(!isStarted)}
-        />
-      </View>
-      <View style={styles.clearContainer}>
-        <RoundedButton
-          onPress={() => {
-            clearSubject();
-          }}
-          style={styles.button}
-          title="-"
-          size={50}
-        />
-      </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

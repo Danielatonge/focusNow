@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StyleSheet, View } from 'react-native';
 import { Focus } from './src/features/focus/Focus';
 import { spacing } from './src/utils/sizes';
 import { colors } from './src/utils/colors';
@@ -15,7 +16,10 @@ export default function App() {
   const [focusHistory, setFocusHistory] = useState([]);
 
   const addFocusHistory = (subject, status) => {
-    setFocusHistory([...focusHistory, { subject, status }]);
+    setFocusHistory([
+      ...focusHistory,
+      { subject, status, id: String(focusHistory.length + 1) },
+    ]);
   };
 
   const onClearHistory = () => {
@@ -24,21 +28,18 @@ export default function App() {
 
   const saveFocusHistory = async () => {
     try {
-      await AsyncStorage.setItem('focusHistory', JSON.stringify(focusHistory));
+      await AsyncStorage.setItem('@focusHistory', JSON.stringify(focusHistory));
     } catch (e) {
       console.error(e);
     }
   };
 
-  useEffect(() => {
-    saveFocusHistory();
-  }, [focusHistory]);
-
   const loadFocusHistory = async () => {
     try {
-      const history = await AsyncStorage.getItem('focusHistory');
-      if (history && history.length) {
-        setFocusHistory(history);
+      const history = await AsyncStorage.getItem('@focusHistory');
+
+      if (history && JSON.parse(history).length) {
+        setFocusHistory(JSON.parse(history));
       }
     } catch (e) {
       console.error(e);
@@ -48,6 +49,11 @@ export default function App() {
   useEffect(() => {
     loadFocusHistory();
   }, []);
+
+  useEffect(() => {
+    console.log('History Changed:', focusHistory);
+    saveFocusHistory();
+  }, [focusHistory]);
 
   return (
     <View style={styles.container}>

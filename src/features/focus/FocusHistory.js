@@ -17,13 +17,14 @@ export const FocusHistory = ({ focusHistory, onClear }) => {
   return (
     <SafeAreaView>
       <View style={styles.container}>
-        {focusHistory.length ? (
+        {focusHistory && focusHistory.length ? (
           <>
             <Text style={styles.context}>Things we've focused on:</Text>
             <FlatList
               contentContainerStyle={styles.list}
               data={focusHistory}
               renderItem={HistoryItem}
+              keyExtractor={item => item.id}
             />
           </>
         ) : (
