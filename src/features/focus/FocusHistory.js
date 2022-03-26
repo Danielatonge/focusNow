@@ -5,9 +5,6 @@ import { fontSizes, spacing } from '../../utils/sizes';
 import { RoundedButton } from '../../components/RoundedButton';
 
 export const FocusHistory = ({ focusHistory, onClear }) => {
-  const clearHistory = () => {
-    onClear();
-  };
 
   const HistoryItem = ({ item, index }) => {
     const color = item.status == 1 ? 'green' : 'red';

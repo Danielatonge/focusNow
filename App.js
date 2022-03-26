@@ -51,9 +51,13 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    console.log('History Changed:', focusHistory);
+    // console.log('History Changed:', focusHistory);
     saveFocusHistory();
   }, [focusHistory]);
+
+  useEffect(() => {
+    console.log(focusSubject)
+  }, [focusSubject]);
 
   return (
     <View style={styles.container}>

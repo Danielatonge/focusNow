@@ -7,7 +7,7 @@ const minutesToMilliseconds = min => min * 1000 * 60;
 
 const formatTime = time => (time < 10 ? `0${time}` : time);
 
-setInterval(() => {});
+setInterval(() => { });
 
 export const Countdown = ({ minutes, isPaused, onProgress, timerEnded }) => {
   const interval = React.useRef(null);
@@ -18,7 +18,7 @@ export const Countdown = ({ minutes, isPaused, onProgress, timerEnded }) => {
 
   const countDown = () => {
     setMillis(time => {
-      if (time <= 0) {
+      if (time < 0) {
         clearInterval(interval.current);
         timerEnded(false);
         return time;
@@ -32,7 +32,7 @@ export const Countdown = ({ minutes, isPaused, onProgress, timerEnded }) => {
     const timeFraction = millis / minutesToMilliseconds(minutes);
     onProgress(Math.abs(timeFraction - 1));
 
-    if (millis <= 0) {
+    if (millis < 0) {
       timerEnded(false);
     }
   }, [millis]);
